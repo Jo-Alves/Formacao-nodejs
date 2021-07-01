@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consumindo API</title>
+</head>
+
+<body>
+    <h4>Login</h4>
+    <input type="text" id="email" name="email" placeholder="joelmirogerio@lastechnology.com" /> <br>
+    <input type="password" id="password" name="password" placeholder="asdhasd" /><br>
+    <button class="btn-entrar">Entrar</button>
+    <hr>
+    <h4>Lista de games</h4>
+    <ul id="games"></ul>
+    <hr>
+    <h4>Novo Game</h4>
+    <input type="number" name="id" id="id" readonly>
+    <input type="text" name="title" id="title" placeholder="Titulo">
+    <input type="number" name="year" id="year" placeholder="Ano" min="1">
+    <input type="number" name="price" id="price" placeholder="Preço" min="0">
+    <button class="btn-save">Salvar</button>
+
+    <script src="axios.js"></script>
+    <script>
+
+        let list = document.querySelector("#games");
+        let btnSave = document.querySelector(".btn-save")
+        let btnEntrar = document.querySelector(".btn-entrar")
+        let link = "http://localhost:3000"
+
+        let axiosConfig = {
+            headers: {
+                authorization: `bearer ${localStorage.getItem("token")}`
+            }
+        }
+
+        btnEntrar.addEventListener("click", async () => {
+            let user = {
+                email: document.getElementById("email").value,
+                password: document.getElementById("password").value
+            }
+            try {
+                let response = await axios.post(`${link}/auth`, user);
+                localStorage.setItem("token", response.data.token);
+                axiosConfig.headers.authorization = `bearer ${localStorage.getItem("token")}`
+
+                var base64Url = axiosConfig.headers.authorization.split(' ')[1];
+                var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                var jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
+                    console.log(jsonPayload);
+                }).join(''));
+            }
+            catch (error) {
+                console.error(error)
+            }
+
+        })
+
+        function loadAPI() {
+            axios.get(`${link}/games`, axiosConfig)
+                .then(response => {
+                    let games = response.data;
+
+                    list.innerHTML = ""
+                    // let index = 1
+                    games.forEach(game => {
+                        let item = document.createElement("li");
+
+                        item.setAttribute("data-id", game.id);
+                        item.setAttribute("data-title", game.title);
+                        item.setAttribute("data-year", game.year);
+                        item.setAttribute("data-price", game.price);
+
+                        item.style.margin = "5px 0"
+                        item.innerHTML = `${game.id} - ${game.title} - ${game.price} - ${game.year}`;
+                        list.appendChild(item)
+
+                        let btnDelete = document.createElement("button");
+                        btnDelete.style.margin = "0 10px 0"
+                        btnDelete.textContent = "Excluir"
+
+                        btnDelete.addEventListener("click", () => {
+                            Delete(item)
+                        });
+
+                        item.appendChild(btnDelete)
+
+                        let btnUpdate = document.createElement("button");
+                        btnUpdate.style.margin = "0 -5px 0"
+                        btnUpdate.textContent = "Atualizar"
+                        item.appendChild(btnUpdate)
+                        btnUpdate.addEventListener("click", () => {
+                            LoadFields(item);
+                        })
+                        // list.innerHTML += `<li data-index=${++index}>${game.id} - ${game.title} - ${game.price} - ${game.year}</li>`;
+                    });
+                }).catch(error => {
+                    console.log(error)
+                })
+        }
+
+        loadAPI()
+
+        function Save() {
+            var id = document.querySelector("#id").value;
+            let verb = id ? "put" : "post";
+
+            var title = document.querySelector("#title").value;
+            var year = document.querySelector("#year").value;
+            var price = document.querySelector("#price").value;
+            let game = {
+                title,
+                year,
+                price
+            }
+
+            axios[verb](`${link}/game/${id}`, game, axiosConfig).then(response => {
+                if (response.status == 200 || response.status == 204) {
+                    alert("Game salvo");
+                    loadAPI();
+                    clearFields();
+                }
+            }).catch(error => {
+                console.log(error)
+            })
+        }
+
+        btnSave.addEventListener("click", Save);
+
+        function Delete(item) {
+            if (!window.confirm("Deseja mesmo excluir o game?"))
+                return;
+
+            axios.delete(`${link}/game/${item.getAttribute("data-id")}`, axiosConfig)
+                .then(response => {
+                    if (response.status == 204) {
+                        alert("Game excluido com sucesso!");
+                        loadAPI();
+                    }
+                })
+                .catch(error => {
+                    console.log(error)
+                })
+        }
+
+        function LoadFields(listItem) {
+            document.querySelector("#id").value = listItem.getAttribute("data-id")
+            document.querySelector("#title").value = listItem.getAttribute("data-title")
+            document.querySelector("#price").value = listItem.getAttribute("data-price")
+            document.querySelector("#year").value = listItem.getAttribute("data-year")
+        }
+
+        function clearFields() {
+            let fields = document.querySelectorAll("input")
+            fields.forEach(element => {
+                element.value = "";
+            });
+        }
+    </script>
+</body>
+
+</html>

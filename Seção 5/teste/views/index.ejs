@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="stylesheet" href="style.css" />
+	<link rel="stylesheet" href="/css/style.css" />
+	<title>Guia perguntas</title>
+	<style>
+		table{
+			border-collapse: collapse;
+			width: 500px;
+			border-radius: 5px;
+		}
+		tbody tr:nth-child(odd){
+			background-color: #ccc;
+		}
+		td, th{
+			padding: 10px;
+			text-align: center;
+			border: 3px solid brown;
+		}
+		
+		th{
+			text-transform: uppercase;
+		}
+	</style>
+</head>
+<body>
+	<h1>Guias perguntas</h1>
+	<hr>
+	<div class="img"><img src="/img/kessia.png"/></div>
+	<h3>Lista de perguntas</h3>
+	<p><strong>Nome: </strong><%= name %></p>
+	<p><strong>Linguagem favorita: </strong><%= lang %></p>
+	<p><strong>Empresa: </strong><%= empresa %></p>
+	<!-- <%= %>  - Recebe valor de uma variável -->
+	<% if(exibirMsg){%>
+		<h2>Mensagem de erro!</h2>
+	<%}else{ %>
+		<h2>Tudo certo por aqui.</h2>
+	<%}%>
+	<table>
+		<thead>
+			<tr>
+				<th>Nome</th>
+				<th>Preço</th>
+			</tr>
+		</thead>
+		<tbody>
+			<% products.forEach(({name, price}) => {%>
+				<tr>
+					<td><%= name %></td>
+					<td>R$ <%= price.toFixed(2) %></td>
+				</tr>				
+			<% }) %>
+		</tbody>
+	</table>
+	
+</body>
+</html>
