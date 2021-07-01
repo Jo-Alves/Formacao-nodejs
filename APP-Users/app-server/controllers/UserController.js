@@ -1,9 +1,12 @@
 const User = require("../models/User");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
+const secret = require("../security/secret");
 
 class UserController {
     async saveUser(req, res) {
         try {
-            const { name, email, password } = req.body;
+            const { name, email, password, role } = req.body;
             const id = req.body.id;
 
             if (!name.trim()) {
@@ -20,7 +23,7 @@ class UserController {
             }
 
             if (id) {
-                const user = await User.save({ id, name, email, role: 0 });
+                const user = await User.save({ id, name, email, role });
                 if (user.status) {
                     res.status(204).send("Tudo OK!");
                 }
@@ -29,13 +32,13 @@ class UserController {
                 }
             } else {
                 const emailExists = await User.findEmail(email);
-                
+
                 if (emailExists.status) {
                     res.status(406).json({ error: "Este email já existe!" })
                     return;
                 }
 
-                const user = await User.save({ name, email, password, role: 0 });
+                const user = await User.save({ name, email, password, role });
                 if (user.status) {
                     res.status(201).send("Tudo OK!");
                 }
@@ -88,6 +91,27 @@ class UserController {
 
         } catch (error) {
 
+        }
+    }
+
+    async login(req, res) {
+        let { email, password } = req.body;
+
+        let user = await User.findByEmail(email);
+
+        if (user) {
+            let result = await bcrypt.compare(password, user.data.password);
+
+            if (result) {
+                let token = jwt.sign({ email, role: user.data.role }, secret);
+
+                res.status(200).json({ token })
+            }
+            else
+                res.status(406).send("Senha incorreta");
+        }
+        else {
+            res.json({ status: false });
         }
     }
 }

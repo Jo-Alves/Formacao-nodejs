@@ -27,7 +27,7 @@ class User {
 
     async findByEmail(email) {
         try {
-            const data = await knex.select(["id"]).table("users").where({ email })
+            const data = await knex.select("*").table("users").where({ email })
 
             if (data.length > 0) {
                 return { status: true, data: data[0] }

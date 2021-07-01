@@ -1,0 +1,1 @@
+module.exports = "jo-e-val-são-casal-maravilhosos-e-gostosos";
