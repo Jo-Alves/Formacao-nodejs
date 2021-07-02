@@ -5,49 +5,43 @@ const secret = require("../security/secret");
 
 class UserController {
     async saveUser(req, res) {
-        try {
-            const { name, email, password, role } = req.body;
-            const id = req.body.id;
+        const { name, email, password, role } = req.body;
+        const id = req.body.id;
 
-            if (!name.trim()) {
-                res.status(400).send("O campo name deve ser preenchida!")
-                return;
-            }
-            if (!email.trim()) {
-                res.status(400).send("O campo email deve ser preenchida!")
-                return;
-            }
-            if (!password.trim()) {
-                res.status(400).send("O campo password deve ser preenchida!")
-                return;
-            }
+        if (!name.trim()) {
+            res.status(400).json({ err: "O campo name deve ser preenchida!" })
+            return;
+        }
+        if (!email.trim()) {
+            res.status(400).json({ err: "O campo email deve ser preenchida!" })
+            return;
+        }
+        if (!password.trim()) {
+            res.status(400).send({ err: "O campo password deve ser preenchida!" })
+            return;
+        }
 
-            if (id) {
-                const user = await User.save({ id, name, email, role });
-                if (user.status) {
-                    res.status(204).send("Tudo OK!");
-                }
-                else {
-                    res.status(401).send(user.error);
-                }
+        if (id) {
+            const user = await User.save({ id, name, email, role });
+            if (user.status) {
+                res.status(204).send("Tudo OK!");
             } else {
-                const emailExists = await User.findEmail(email);
-
-                if (emailExists.status) {
-                    res.status(406).json({ error: "Este email já existe!" })
-                    return;
-                }
-
-                const user = await User.save({ name, email, password, role });
-                if (user.status) {
-                    res.status(201).send("Tudo OK!");
-                }
-                else {
-                    res.status(401).send(user.error);
-                }
+                res.status(401).send(user.error);
             }
-        } catch (error) {
-            console.error(error);
+        } else {
+            const emailExists = await User.findEmail(email);
+
+            if (emailExists.status) {
+                res.status(406).send({ err: "Este email já existe!" })
+                return;
+            }
+
+            const user = await User.save({ name, email, password, role });
+            if (user.status) {
+                res.status(200).send("Tudo OK!");
+            } else {
+                res.status(401).send(user.error);
+            }
         }
     }
 
@@ -55,8 +49,7 @@ class UserController {
         const users = await User.find()
         if (users.status) {
             res.status(200).json(users.data);
-        }
-        else {
+        } else {
             res.status(404).send(users.error);
         }
     }
@@ -75,8 +68,7 @@ class UserController {
 
         if (users.status) {
             res.status(200).json(users.data);
-        }
-        else
+        } else
             res.status(404).send("Usuário não existe!");
     }
 
@@ -85,8 +77,7 @@ class UserController {
             const data = await User.delete(req.params.id);
             if (data.status) {
                 res.status(204).send("Usuário excluido com sucesso!");
-            }
-            else
+            } else
                 res.status(400).send("O usuário não existe!");
 
         } catch (error) {
@@ -106,11 +97,9 @@ class UserController {
                 let token = jwt.sign({ email, role: user.data.role }, secret);
 
                 res.status(200).json({ token })
-            }
-            else
+            } else
                 res.status(406).send("Senha incorreta");
-        }
-        else {
+        } else {
             res.json({ status: false });
         }
     }

@@ -1,4 +1,4 @@
-const { Router} = require("express")
+const { Router } = require("express")
 const router = Router();
 const HomeController = require("../controllers/HomeController");
 const UserController = require("../controllers/UserController");
@@ -8,7 +8,7 @@ const adminAuth = require("../middleware/AdminAuth");
 router.get('/', HomeController.index);
 router.get("/user/:id", UserController.findUserById);
 router.get("/users", adminAuth, UserController.findAllUser);
-router.post("/user", adminAuth, UserController.saveUser);
+router.post("/user", UserController.saveUser);
 router.put("/user", adminAuth, UserController.saveUser);
 router.delete("/user/:id", adminAuth, UserController.deleteUser);
 router.post("/recoverpassword", PasswordTokenController.recoverPassword);

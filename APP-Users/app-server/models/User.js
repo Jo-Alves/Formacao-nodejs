@@ -17,8 +17,7 @@ class User {
             const data = await knex.select(["id", "name", "email", "role"]).table("users").where({ id })
             if (data.length > 0) {
                 return { status: true, data }
-            }
-            else
+            } else
                 return { status: false }
         } catch (error) {
             return { error };
@@ -31,8 +30,7 @@ class User {
 
             if (data.length > 0) {
                 return { status: true, data: data[0] }
-            }
-            else
+            } else
                 return { status: false }
         } catch (error) {
             return { error };
@@ -44,8 +42,7 @@ class User {
 
             if (data.length > 0) {
                 return { status: true, data }
-            }
-            else
+            } else
                 return { status: false }
         } catch (error) {
             return { error };
@@ -58,8 +55,7 @@ class User {
             if (userById.status) {
                 await knex.delete().table("users").where({ id })
                 return { status: true }
-            }
-            else
+            } else
                 return { status: false }
         } catch (error) {
             return { error };
@@ -72,14 +68,14 @@ class User {
             if (id) {
                 await knex.update({ name, email, role }).table("users").where({ id: parseInt(id) })
                 return { status: true }
-            }
-            else {
+            } else {
                 let hash = await bcrypt.hash(password, 10);
 
                 await knex.insert({ name, email, password: hash, role }).table("users");
                 return { status: true }
             }
         } catch (error) {
+            console.log(error)
             return ({ status: false, error })
         }
     }
