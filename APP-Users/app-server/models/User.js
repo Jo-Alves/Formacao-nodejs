@@ -8,7 +8,7 @@ class User {
             const data = await knex.select(["id", "name", "email", "role", "password"]).table("users");
             return { status: true, data }
         } catch (error) {
-            return { status: false, error }
+            return { status: false, err }
         }
     }
 

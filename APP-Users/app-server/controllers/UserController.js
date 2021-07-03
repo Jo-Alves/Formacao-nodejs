@@ -50,7 +50,7 @@ class UserController {
         if (users.status) {
             res.status(200).json(users.data);
         } else {
-            res.status(404).send(users.error);
+            res.status(404).json({ err: users.error });
         }
     }
 
@@ -78,10 +78,10 @@ class UserController {
             if (data.status) {
                 res.status(204).send("Usuário excluido com sucesso!");
             } else
-                res.status(400).send("O usuário não existe!");
+                res.status(400).json({ err: "O usuário não existe!" });
 
         } catch (error) {
-
+            res.status(400).json({ err: "Houve um erro no servidor. Tente novamente mais tarde!" });
         }
     }
 
@@ -110,7 +110,7 @@ class UserController {
             } else
                 res.status(403).send({ err: "Senha incorreta!" });
         } else {
-            res.status(401).json({ status: false, err: "O email não existe!" });
+            res.status(401).json({ status: false, err: "O Usuário não existe!" });
         }
     }
 }
