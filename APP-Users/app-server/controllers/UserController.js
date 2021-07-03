@@ -9,7 +9,7 @@ class UserController {
         const id = req.body.id;
 
         if (!name.trim()) {
-            res.status(400).json({ err: "O campo name deve ser preenchida!" })
+            res.status(400).json({ err: "O campo nome deve ser preenchida!" })
             return;
         }
         if (!email.trim()) {
@@ -32,7 +32,7 @@ class UserController {
             const emailExists = await User.findEmail(email);
 
             if (emailExists.status) {
-                res.status(406).send({ err: "Este email já existe!" })
+                res.status(403).send({ err: "Este email já existe!" })
                 return;
             }
 
@@ -88,9 +88,19 @@ class UserController {
     async login(req, res) {
         let { email, password } = req.body;
 
+        if (!email.trim()) {
+            res.status(400).json({ err: "Informe o email!" });
+            return;
+        }
+
+        if (!password.trim()) {
+            res.status(400).json({ err: "Informe a senha!" });
+            return;
+        }
+
         let user = await User.findByEmail(email);
 
-        if (user) {
+        if (user.status) {
             let result = await bcrypt.compare(password, user.data.password);
 
             if (result) {
@@ -98,9 +108,9 @@ class UserController {
 
                 res.status(200).json({ token })
             } else
-                res.status(406).send("Senha incorreta");
+                res.status(403).send({ err: "Senha incorreta!" });
         } else {
-            res.json({ status: false });
+            res.status(401).json({ status: false, err: "O email não existe!" });
         }
     }
 }
