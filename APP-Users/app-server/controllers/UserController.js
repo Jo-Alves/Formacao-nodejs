@@ -16,8 +16,9 @@ class UserController {
             res.status(400).json({ err: "O campo email deve ser preenchida!" })
             return;
         }
-        if (!password.trim()) {
-            res.status(400).send({ err: "O campo password deve ser preenchida!" })
+        if (!id) {
+            if (!password.trim())
+                res.status(400).send({ err: "O campo password deve ser preenchida!" })
             return;
         }
 

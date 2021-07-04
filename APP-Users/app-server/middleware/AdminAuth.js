@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken")
 const secret = require("../security/secret");
 
-module.exports = async (req, res, next) => {
+module.exports = async(req, res, next) => {
     try {
         const authToken = req.headers["authorization"]
 
@@ -11,16 +11,14 @@ module.exports = async (req, res, next) => {
             let token = authToken.split(" ")[1];
 
             let decoded = await jwt.verify(token, secret);
-            console.log(await jwt.decode(token));
+            // console.log(await jwt.decode(token));
             if (decoded.role == 1) {
                 next();
-            }
-            else {
+            } else {
                 res.status(401).send("Você não está autorizado!");
                 return;
             }
-        }
-        else {
+        } else {
             res.status(401).send("Você não está autorizado!");
             return;
         }

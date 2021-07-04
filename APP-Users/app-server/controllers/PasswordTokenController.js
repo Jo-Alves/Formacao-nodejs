@@ -9,7 +9,6 @@ class PasswordTokenController {
 
         if (result.msgError) {
             res.status(401).send(result.msgError);
-            console.log(result.msgError)
             return;
         }
         if (result.status) {
@@ -32,8 +31,7 @@ class PasswordTokenController {
         if (isValidToken.status) {
             await User.changePassword(password, isValidToken.token.userId, isValidToken.token.token);
             res.status(201).send("Senha alterada")
-        }
-        else
+        } else
             res.status(406).send("Token inválido")
     }
 }
