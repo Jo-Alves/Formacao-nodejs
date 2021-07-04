@@ -74,9 +74,9 @@ class User {
                 await knex.insert({ name, email, password: hash, role }).table("users");
                 return { status: true }
             }
-        } catch (error) {
+        } catch (err) {
             console.log(error)
-            return ({ status: false, error })
+            return ({ status: false, err })
         }
     }
 

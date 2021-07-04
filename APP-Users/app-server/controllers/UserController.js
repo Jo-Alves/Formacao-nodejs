@@ -27,7 +27,7 @@ class UserController {
             if (user.status) {
                 res.status(204).send("Tudo OK!");
             } else {
-                res.status(401).send(user.error);
+                res.status(401).send(user.err);
             }
         } else {
             const emailExists = await User.findEmail(email);
@@ -41,7 +41,7 @@ class UserController {
             if (user.status) {
                 res.status(200).send("Tudo OK!");
             } else {
-                res.status(401).send(user.error);
+                res.status(401).send(user.err);
             }
         }
     }
@@ -70,7 +70,7 @@ class UserController {
         if (users.status) {
             res.status(200).json(users.data);
         } else
-            res.status(404).send("Usuário não existe!");
+            res.status(404).send({ err: "Usuário não existe!" });
     }
 
     async deleteUser(req, res) {

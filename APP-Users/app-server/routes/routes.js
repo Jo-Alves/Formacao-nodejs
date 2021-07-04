@@ -7,7 +7,7 @@ const adminAuth = require("../middleware/AdminAuth");
 
 router.get('/', HomeController.index);
 router.get("/user/:id", UserController.findUserById);
-router.get("/users", adminAuth, UserController.findAllUser);
+router.get("/users", UserController.findAllUser);
 router.post("/user", UserController.saveUser);
 router.put("/user", adminAuth, UserController.saveUser);
 router.delete("/user/:id", adminAuth, UserController.deleteUser);
